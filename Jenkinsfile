@@ -7,14 +7,16 @@ pipeline {
                 echo 'Cloning repository'
             }
         }
-        stage('Build') {
+        stage('Build Docker Image ') {
             steps {
-                echo 'Building application'
+                echo 'Building Docker Image'
+
+                sh 'docker build -t jenkins-demo-app .'
             }
         }
         stage('Test') {
             steps {
-                echo 'Running tests'
+                echo 'No tests yet'
             }
         }
     } 
