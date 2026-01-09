@@ -2,21 +2,28 @@ pipeline {
     agent any
     
     stages {
-        stage('Clone Code') {
+        stage('Checkout') {
             steps {
-                echo 'Cloning repository'
+                echo 'Checing out'
+
+                checkout scm
+            }
+        }
+        stage('Build') {
+            steps {
+                echo 'Building application'
             }
         }
         stage('Build Docker Image ') {
             steps {
                 echo 'Building Docker Image'
 
-                sh 'docker build -t jenkins-demo-app .'
+                sh 'docker build -t jenkins-demo-app:latest .'
             }
         }
         stage('Test') {
             steps {
-                echo 'No tests yet'
+                echo 'Running tests'
             }
         }
     } 
