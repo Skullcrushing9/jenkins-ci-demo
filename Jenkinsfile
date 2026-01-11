@@ -30,17 +30,11 @@ pipeline {
 
                 sh '''
 
-                    docker rm -f demo-container || true
+                     docker rm -f demo-container || true
 
-                    docker run -d \
+                     docker run -d --name demo-container -p 8081:80 demo-app:1
 
-                    --name demo-container \
-
-                    -p 8081:80 \
-
-                    demo-app:1
-
-                 '''
+                   '''
 
             }
 
