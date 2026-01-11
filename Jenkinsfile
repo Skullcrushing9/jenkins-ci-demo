@@ -1,30 +1,49 @@
 pipeline {
+
     agent any
-    
+
     stages {
+
         stage('Checkout') {
+
             steps {
-                echo 'Checing out'
 
                 checkout scm
-            }
-        }
-        stage('Build') {
-            steps {
-                echo 'Building application'
-            }
-        }
-        stage('Build Docker Image ') {
-            steps {
-                echo 'Building Docker Image'
 
-                sh 'docker build -t jenkins-demo-app:latest .'
             }
+
         }
-        stage('Test') {
+
+        stage('Build Image') {
+
             steps {
-                echo 'Running tests'
+
+                sh 'docker build -t demo-app:${BUILD_NUMBER} .'
+
             }
+
         }
-    } 
+
+        stage('Deploy New Version') {
+
+            steps {
+
+                sh '''
+
+                docker run -d \
+
+                -p 8081:80 \
+
+                --name demo-app-${BUILD_NUMBER} \
+
+                demo-app:${BUILD_NUMBER}
+
+                '''
+
+            }
+
+        }
+
+    }
+
 }
