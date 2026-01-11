@@ -32,7 +32,7 @@ pipeline {
 
                      docker rm -f demo-container || true
 
-                     docker run -d --name demo-container -p 8081:80 demo-app:1
+                     docker run -d --name demo-container -p 8081:80 demo-app:${BUILD_NUMBER}
 
                    '''
 
