@@ -1,6 +1,10 @@
 pipeline {
-
     agent any
+    environment {
+        APP_NAME = "demo-app"
+        CONTAINER_NAME = "demo-container"
+        PORT = "8081"
+    }
 
     stages {
 
@@ -18,7 +22,7 @@ pipeline {
 
             steps {
 
-                sh 'docker build -t demo-app:${BUILD_NUMBER} .'
+                sh 'docker build -t ${APP_NAME}:${BUILD_NUMBER} .'
 
             }
 
@@ -30,9 +34,9 @@ pipeline {
 
                 sh '''
 
-                     docker rm -f demo-container || true
+                     docker rm -f ${CONTAINER_NAME} || true
 
-                     docker run -d --name demo-container -p 8081:80 demo-app:${BUILD_NUMBER}
+                     docker run -d --name ${CONTAINER_NAME} -p ${PORT}:80 ${APP_NAME}:${BUILD_NUMBER}
 
                    '''
 
