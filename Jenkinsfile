@@ -4,6 +4,8 @@ pipeline {
         APP_NAME = "demo-app"
         CONTAINER_NAME = "demo-container"
         PORT = "8081"
+        DOCKERHUB_USER = "gamemaster007"
+        IMAGE = "${DOCKERHUB_USERNAME}/${APP_NAME}"
     }
 
     stages {
@@ -22,12 +24,24 @@ pipeline {
 
             steps {
 
-                sh 'docker build -t ${APP_NAME}:${BUILD_NUMBER} .'
+                sh 'docker build -t ${IMAGE}:${BUILD_NUMBER} .'
 
             }
 
         }
-
+        stage('DockerHub Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds' ,usernameVariable: 'DH_USER' ,passwordVariable: 'DH_PASS')]) {
+                sh 'echo $DH_PASS | docker login -u $DH_USER --password-stdin'
+                }
+            }
+        }   
+        stage('Push Image') {
+            steps {
+                sh 'docker push ${IMAGE}:${BUILD_NUMBER}'
+            }
+        }
+        
         stage('Deploy New Version') {
 
             steps {
@@ -36,7 +50,7 @@ pipeline {
 
                      docker rm -f ${CONTAINER_NAME} || true
 
-                     docker run -d --name ${CONTAINER_NAME} -p ${PORT}:80 ${APP_NAME}:${BUILD_NUMBER}
+                     docker run -d --name ${CONTAINER_NAME} -p ${PORT}:80 ${IMAGE}:${BUILD_NUMBER}
 
                    '''
 
