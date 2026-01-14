@@ -5,7 +5,7 @@ pipeline {
         CONTAINER_NAME = "demo-container"
         PORT = "8081"
         DOCKERHUB_USER = "gamemaster007"
-        IMAGE = "${DOCKERHUB_USERNAME}/${APP_NAME}"
+        IMAGE = "${DOCKERHUB_USER}/${APP_NAME}"
     }
 
     stages {
