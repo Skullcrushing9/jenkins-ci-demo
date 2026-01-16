@@ -1,60 +1,129 @@
 pipeline {
-    agent any
-    environment {
-        APP_NAME = "demo-app"
-        PORT = "8085"
-        IMAGE_NAME = "gamemaster007/demo-app"
-    }
 
-    stages {
+  agent any
 
-        stage('Checkout') {   
-            steps {
-              cleanWs()
-              checkout scm
+  environment {
 
-            }
+    APP_NAME = "demo-app"
 
-        }
+    IMAGE_NAME = "YOUR_DOCKERHUB_USERNAME/demo-app"
 
-        stage('Build Image') {
+    PORT = "8085"
 
-            steps {
+    TAG = "${BUILD_NUMBER}"
 
-                sh 'docker build -t $IMAGE_NAME:$BUILD_NUMBER .'
+  }
 
-            }
+  stages {
 
-        }
-        stage('DockerHub Login') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds' ,usernameVariable: 'DH_USER' ,passwordVariable: 'DH_PASS')]) {
-                sh 'echo $DH_PASS | docker login -u $DH_USER --password-stdin'
-                }
-            }
-        }   
-        stage('Push Image') {
-            steps {
-                sh 'docker push $IMAGE_NAME:$BUILD_NUMBER'
-            }
-        }
-        
-        stage('Deploy New Version') {
+    stage('Checkout') {
 
-            steps {
+      steps {
 
-                sh '''
+        cleanWs()
 
-                     docker rm -f $APP_NAME || true
+        checkout scm
 
-                     docker run -d --name $APP_NAME -p $PORT:80 $IMAGE_NAME:$BUILD_NUMBER
-
-                   '''
-
-            }
-
-        }
+      }
 
     }
+
+    stage('Build Image') {
+
+      steps {
+
+        sh '''
+
+          echo "Building image..."
+
+          docker build -t $IMAGE_NAME:$TAG .
+
+        '''
+
+      }
+
+    }
+
+    stage('Push Image') {
+
+      steps {
+
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
+
+          sh '''
+
+            echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin
+
+            docker push $IMAGE_NAME:$TAG
+
+          '''
+
+        }
+
+      }
+
+    }
+
+    stage('Deploy') {
+
+      steps {
+
+        sh '''
+
+          echo "Deploying new version..."
+
+          docker rm -f $APP_NAME || true
+
+          docker run -d --name $APP_NAME -p $PORT:80 $IMAGE_NAME:$TAG
+
+        '''
+
+      }
+
+    }
+
+    stage('Health Check') {
+
+      steps {
+
+        sh '''
+
+          echo "Checking app..."
+
+          sleep 3
+
+          curl -I http://localhost:$PORT || exit 1
+
+        '''
+
+      }
+
+    }
+
+  }
+
+  post {
+
+    success {
+
+      echo "✅ Deployment successful: $IMAGE_NAME:$TAG"
+
+    }
+
+    failure {
+
+      echo "❌ Pipeline failed. Check Console Output."
+
+    }
+
+    always {
+
+      echo "🧹 Cleaning unused dangling images..."
+
+      docker image prune -f || true
+
+    }
+
+  }
 
 }
