@@ -52,7 +52,7 @@ pipeline {
         sh '''
           echo "Checking app..."
           sleep 3
-          curl -I http://localhost:$PORT || exit 1
+          curl -I http://host.docker.internal:$PORT || exit 1
         '''
       }
     }
