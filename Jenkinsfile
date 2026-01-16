@@ -50,9 +50,9 @@ pipeline {
     stage('Health Check') {
       steps {
         sh '''
-          echo "Checking app..."
+          echo "Checking app from inside container..."
           sleep 3
-          curl -I http://host.docker.internal:$PORT || exit 1
+          docker exec demo-app wget -qO- http://localhost > /dev/null
         '''
       }
     }
