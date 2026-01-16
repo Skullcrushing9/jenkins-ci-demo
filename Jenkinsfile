@@ -6,7 +6,7 @@ pipeline {
 
     APP_NAME = "demo-app"
 
-    IMAGE_NAME = "YOUR_DOCKERHUB_USERNAME/demo-app"
+    IMAGE_NAME = "gamemaster007/demo-app"
 
     PORT = "8085"
 
