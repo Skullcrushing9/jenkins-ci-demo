@@ -2,10 +2,8 @@ pipeline {
     agent any
     environment {
         APP_NAME = "demo-app"
-        CONTAINER_NAME = "demo-container"
-        PORT = "8081"
-        DOCKERHUB_USER = "gamemaster007"
-        IMAGE = "${DOCKERHUB_USER}/${APP_NAME}"
+        PORT = "8085"
+        IMAGE_NAME = "gamemaster007/demo-app"
     }
 
     stages {
@@ -24,7 +22,7 @@ pipeline {
 
             steps {
 
-                sh 'docker build -t ${IMAGE}:${BUILD_NUMBER} .'
+                sh 'docker build -t $IMAGE_NAME:$BUILD_NUMBER .'
 
             }
 
@@ -38,7 +36,7 @@ pipeline {
         }   
         stage('Push Image') {
             steps {
-                sh 'docker push ${IMAGE}:${BUILD_NUMBER}'
+                sh 'docker push $IMAGE_NAME:$BUILD_NUMBER'
             }
         }
         
@@ -48,9 +46,9 @@ pipeline {
 
                 sh '''
 
-                     docker rm -f ${CONTAINER_NAME} || true
+                     docker rm -f $APP_NAME || true
 
-                     docker run -d --name ${CONTAINER_NAME} -p ${PORT}:80 ${IMAGE}:${BUILD_NUMBER}
+                     docker run -d --name $APP_NAME -p $PORT:80 $IMAGE_NAME:$BUILD_NUMBER
 
                    '''
 
