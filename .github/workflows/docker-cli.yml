@@ -42,5 +42,5 @@ jobs:
 
           push: true
 
-          tags: $gamemaster007/demo-app:latest
-                $gamemaster007/demo-app:${{ github.run_number }} 
+          tags: | $gamemaster007/demo-app:latest
+                  $gamemaster007/demo-app:${{ github.run_number }} 
