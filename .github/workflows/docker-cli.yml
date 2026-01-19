@@ -42,5 +42,4 @@ jobs:
 
           push: true
 
-          tags: | $gamemaster007/demo-app:latest
-                  $gamemaster007/demo-app:${{ github.run_number }} 
+          tags: | ${{secrets.DOCKERHUB_USERNAME}}/demo-app:latest  ${{secrets.DOCKERHUB_USERNAME}}:${{ github.run_number }} 
