@@ -43,5 +43,7 @@ jobs:
           push: true
 
           tags: |
-  ${{ secrets.DOCKERHUB_USERNAME }}/demo-app:latest
-  ${{ secrets.DOCKERHUB_USERNAME }}/demo-app:${{ github.run_number }}
+
+            ${{ secrets.DOCKERHUB_USERNAME }}/demo-app:latest
+
+            ${{ secrets.DOCKERHUB_USERNAME }}/demo-app:${{ github.run_number }}
